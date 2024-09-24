@@ -1,0 +1,81 @@
+//
+1) Tabulation ->Bottom up
+2) Memoization -> Top Down 
+
+// Recurrsion code
+
+    f(n)
+        {
+            if(n<=1)
+            {
+                return n;
+            }
+            return f(n-1) + f(n-2);
+        }
+
+suppose we have to draw a fibonacci tree for n=5
+
+                    f(5)
+            f(4)            f(3)
+      f(3)        f(2)
+  f(2)    f(1)
+f(1) f(0) 
+
+now in this tree first f(4) complete hoga then f(3) chalu hoga. similarly jaise jaise vo neeche aati jaayegi in level same hoga. and then we will hit the base case at f(2)then return 
+to f(3) as f(2) was calculated and f(1) was base case. then as we move to know the value of f(4) we need values of f(3)(which is just calculated) but recurssion will calculate the f(2)
+again and hence memoization solve this problem as it says to memorize the already calculated values.
+what is memoization?
+tend to store the values of subproblems in some maps/table.
+
+// Approach 1 -> Memoization (Top Down) -> TC-> O(N) && SC -> O(N)             +           O(N)
+                                                          recursin stack space             array
+        int f(int n, vector<int> &dp)
+        {
+            if(n<=1)
+            {
+                return n;
+            }
+            if(dp[n]!=-1)
+            {
+                return dp[n];
+            }
+            
+            return dp[n]=f(n-1, dp)+f(n-2, dp);
+        }
+        
+        int main()
+        {
+            int n;
+            cin>>n;
+            vector<int> dp(n+1, -1);
+            cout<<f(n, dp)<<endl;
+            
+            return 0;
+        }
+
+// Approach 2 -> Tabulation (Bottom Up) -> TC -> O(N) && SC -> O(N) (only array space and here we eliminated recurssion stack space)
+
+      vector<int> dp(n+1, -1);
+        
+        dp[0]=0;
+        dp[1]=1;
+        
+        for(int i=2; i<=n; i++)
+        {
+            dp[i]=dp[i-1]+dp[i-2];
+        }
+        return dp[n];
+
+// Approach 3 -> Eliminating SC -> Bsically it will give TC -> O(N) SC -> O(1)
+
+int prev1=0;
+        int prev2=1;
+        int ans =-1;
+        for(int i=2; i<=n; i++)
+        {
+            ans=prev1+prev2;
+            prev1=prev2;
+            prev2=ans;
+        }
+        
+        return ans;
