@@ -1,0 +1,82 @@
+// Approach 1 -> Recursive soln (Time limit exceeded)
+
+int maxSum(int index, vector<int>& nums)
+    {
+        if(index==0) return nums[index];
+        if(index<0) return 0;
+
+        //pick
+        int pick = nums[index] + maxSum(index-2, nums);
+
+        //not pick 
+        int notPick = maxSum(index-1, nums);
+        return max(pick, notPick);
+    }
+
+    int rob(vector<int>& nums) {
+        int ans=0;
+        ans = maxSum(nums.size()-1, nums);
+        return ans;
+    }
+
+// Approach 2 -> memoization
+
+int maxSum(int index, vector<int>& nums, vector<int>& dp)
+    {
+        if(index==0) return nums[index];
+        if(index<0) return 0;
+        if(dp[index]!=-1) return dp[index];
+        //pick
+        int pick = nums[index] + maxSum(index-2, nums, dp);
+
+        //not pick 
+        int notPick = maxSum(index-1, nums, dp);
+        return dp[index]=max(pick, notPick);
+    }
+
+    int rob(vector<int>& nums) {
+        vector<int> dp(nums.size(), -1);
+        return maxSum(nums.size()-1, nums, dp);
+    }
+
+// Approach 3 -> tabulation
+
+int rob(vector<int>& nums) {
+        if(nums.size()==0) return 0;
+        if(nums.size()==1) return nums[0];
+        vector<int> dp(nums.size(), -1);
+        // Initialize base cases
+        dp[0] = nums[0];
+        dp[1] = max(nums[0], nums[1]);
+
+        for(int i=2; i<nums.size(); i++)
+        {
+            //pick
+            int pick = nums[i] + dp[i-2];
+            //not pick 
+            int notPick = dp[i-1];
+            dp[i]=max(pick, notPick);
+        }
+        return dp[nums.size()-1];
+    }
+
+// Approach 4 -> Space optimization
+
+int rob(vector<int>& nums) {
+        if(nums.size()==0) return 0;
+        if(nums.size()==1) return nums[0];
+        // Initialize base cases
+        int prev1 = nums[0];
+        int prev2 = max(nums[0], nums[1]);
+
+        for(int i=2; i<nums.size(); i++)
+        {
+            //pick
+            int pick = nums[i] + prev1;
+            //not pick 
+            int notPick = prev2;
+            prev1=prev2;
+            prev2=max(pick, notPick);
+        }
+        return prev2;
+    }
