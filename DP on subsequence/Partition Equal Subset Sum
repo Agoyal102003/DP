@@ -1,0 +1,36 @@
+// Approach 1 -> Space optimization 
+
+class Solution {
+public:
+    bool isSubsetSum(vector<int>arr, int sum){
+        // code here 
+        vector<bool> prev(sum+1, 0), curr(sum+1, 0);
+        prev[0]=curr[0]=true;
+        
+        // Ensure arr[0] does not exceed sum to avoid out-of-bounds
+        if (arr[0] <= sum) {
+            prev[arr[0]] = true;
+        }
+        
+        for(int ind=1; ind<arr.size(); ind++)
+        {
+            for(int target=1; target<=sum; target++)
+            {
+                bool not_take=prev[target];
+                bool take=false;
+                if(arr[ind]<=target) take= prev[target - arr[ind]];
+                curr[target]= not_take || take;
+            }
+            prev=curr;
+        }
+        return prev[sum];
+    }
+
+    bool canPartition(vector<int>& nums) {
+        int totsum=0;
+        for(int i=0; i<nums.size(); i++) totsum+=nums[i];
+        if(totsum%2!=0) return false;
+        int sum=totsum/2;
+        return isSubsetSum(nums, sum);
+    }
+};
