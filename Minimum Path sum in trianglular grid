@@ -1,0 +1,110 @@
+// Approach 1 -> Recursive way 
+
+class Solution {
+public:
+    int f(int i, int j, vector<vector<int>>& triangle)
+    {
+        if(i==0 && j==0) return triangle[i][j];
+
+        if(j<0 || j>i) return INT_MAX;
+
+        int up= f(i-1, j-1, triangle);
+        int left = f(i-1, j, triangle);
+
+        return triangle[i][j] + min(up, left);
+    }
+
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int m=triangle.size();
+        int n=triangle[m-1].size();
+        int minSum=INT_MAX;
+        for(int i=0; i<n; i++)
+        {
+            minSum = min(minSum, f(m-1, i, triangle));
+        }
+        return minSum;
+    }
+};
+
+// Approach 2-> Memoization 
+
+class Solution {
+public:
+    int f(int i, int j, vector<vector<int>>& triangle, vector<vector<int>>& dp)
+    {
+        if(i==0 && j==0) return triangle[i][j];
+
+        if(j<0 || j>i) return INT_MAX;
+        if(dp[i][j]!=-1) return dp[i][j];
+        int up= f(i-1, j-1, triangle, dp);
+        int left = f(i-1, j, triangle, dp);
+
+        return dp[i][j]=triangle[i][j] + min(up, left);
+    }
+
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int m=triangle.size();
+        int n=triangle[m-1].size();
+        int minSum=INT_MAX;
+        vector<vector<int>> dp(m, vector<int>(n, -1));
+        for(int i=0; i<n; i++)
+        {
+            minSum = min(minSum, f(m-1, i, triangle, dp));
+        }
+        return minSum;
+    }
+};
+
+// Approach 3 -> Tabulation 
+
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int m = triangle.size();
+        // dp table with the same size as triangle
+        vector<vector<int>> dp(m, vector<int>(m, 0));
+        
+        // Base case: initialize the last row of dp with the triangle's last row
+        for (int j = 0; j < m; ++j) {
+            dp[m-1][j] = triangle[m-1][j];
+        }
+        
+        // Build the dp table bottom-up
+        for (int i = m-2; i >= 0; --i) {
+            for (int j = 0; j <= i; ++j) {
+                int down = dp[i+1][j];
+                int down_right = dp[i+1][j+1];
+                dp[i][j] = triangle[i][j] + min(down, down_right);
+            }
+        }
+        
+        // The top element will contain the minimum path sum
+        return dp[0][0];
+    }
+};
+
+
+// Approach 4 -> Space optimization
+
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int m = triangle.size();
+        vector<int> dp(m, 0);
+        
+        // Initialize dp with the last row of the triangle
+        for (int j = 0; j < m; ++j) {
+            dp[j] = triangle[m-1][j];
+        }
+        
+        // Iterate from the second-last row to the top
+        for (int i = m-2; i >= 0; --i) {
+            for (int j = 0; j <= i; ++j) {
+                dp[j] = triangle[i][j] + min(dp[j], dp[j+1]);
+            }
+        }
+        
+        // dp[0] will contain the minimum path sum
+        return dp[0];
+    }
+};
