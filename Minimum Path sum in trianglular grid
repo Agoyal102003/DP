@@ -1,3 +1,5 @@
+fixed point to variable point
+
 // Approach 1 -> Recursive way 
 
 class Solution {
