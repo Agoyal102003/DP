@@ -1,0 +1,85 @@
+// Approach 1 -> Recursive  -> TC -> O(2^n) SC-> O(N)
+
+class Solution{   
+public:
+    bool f(int index, vector<int>& arr, int sum)
+    {
+        if(sum==0) return true;
+        if(index==arr.size()) return false;
+        //pick
+        bool pick=false;
+        if(sum>=arr[index]) pick=f(index+1, arr, sum-arr[index]);
+        
+        //not pick
+        bool not_take=f(index+1, arr, sum);
+        
+        return pick || not_take; 
+    }
+
+    bool isSubsetSum(vector<int>arr, int sum){
+        // code here
+        return f(0, arr, sum);
+    }
+};
+
+// Approach 2 -> Memoization 
+
+class Solution{   
+public:
+    bool f(int index, vector<int>& arr, int sum, vector<vector<int>>& dp)
+    {
+        if(sum==0) return true;
+        if(index==arr.size()) return false;
+        //pick
+        if(dp[index][sum]!=-1) return dp[index][sum];
+        bool pick=false;
+        if(sum>=arr[index]) pick=f(index+1, arr, sum-arr[index], dp);
+        
+        //not pick
+        bool not_take=f(index+1, arr, sum, dp);
+        
+        return dp[index][sum]=pick || not_take; 
+    }
+
+    bool isSubsetSum(vector<int>arr, int sum){
+        // code here
+        vector<vector<int>> dp(arr.size(), vector<int>(sum+1, -1));
+        return f(0, arr, sum, dp);
+    }
+};
+
+// Approach 3 -> Tabulation 
+
+class Solution{   
+public:
+    bool isSubsetSum(vector<int> arr, int sum){
+        int n = arr.size();
+        // Create a dp table where dp[i][j] means whether it's possible to get sum j using the first i elements
+        vector<vector<bool>> dp(n + 1, vector<bool>(sum + 1, false));
+
+        // Initialize the dp table
+        // dp[i][0] = true, because we can always form a sum of 0 with an empty subset
+        for(int i = 0; i <= n; i++){
+            dp[i][0] = true;
+        }
+
+        // Fill the dp table
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= sum; j++){
+                // If we don't take the current element arr[i-1]
+                bool not_take = dp[i - 1][j];
+                
+                // If we take the current element arr[i-1], we need to check if we can form the remaining sum (j - arr[i-1])
+                bool take = false;
+                if(j >= arr[i - 1])
+                    take = dp[i - 1][j - arr[i - 1]];
+
+                // Set the value for dp[i][j]
+                dp[i][j] = take || not_take;
+            }
+        }
+
+        // The answer will be in dp[n][sum], which indicates whether we can form the sum using all elements
+        return dp[n][sum];
+    }
+};
