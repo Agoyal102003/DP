@@ -1,0 +1,114 @@
+// Approach 1 -> Tabulation(Idk but this is giving an runtime error, even on investigation found out that maybe size became too large as
+it is a 2D array and hence alternate solution is given in approach 2.)
+
+class Solution {
+public:
+    int minimumDifference(vector<int>& nums) {
+        int totSum = 0;
+        int n = nums.size();
+        
+        // Compute total sum of the array
+        for (int i = 0; i < n; i++) 
+            totSum += nums[i];
+
+        int k = totSum;
+        
+        // DP array to check if a sum is possible
+        vector<vector<bool>> dp(n, vector<bool>(k + 1, false));
+
+        // Base case: we can always form sum 0
+        for (int i = 0; i < n; i++) 
+            dp[i][0] = true;
+
+        // Initialize the first element in dp array
+        if (nums[0] <= k) 
+            dp[0][nums[0]] = true;
+
+        // Fill DP table
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j <= k; j++) {
+                bool not_take = dp[i-1][j];
+                bool take = false;
+                if (nums[i] <= j) {  // Use nums[i] here, not nums[i-1]
+                    take = dp[i-1][j - nums[i]];
+                }
+                dp[i][j] = take || not_take;
+            }
+        }
+
+        // Find the minimum difference
+        int mini = INT_MAX;
+        for (int S1 = 0; S1 <= k / 2; S1++) {
+            if (dp[n-1][S1]) {
+                int S2 = totSum - S1;
+                mini = min(mini, abs(S1 - S2));
+            }
+        }
+
+        return mini;
+    }
+};
+
+// Approach 2 -> 
+
+class Solution {
+public:
+    int minimumDifference(vector<int>& nums) {
+        int n = nums.size() / 2;
+        vector<int> left(nums.begin(), nums.begin() + n);
+        vector<int> right(nums.begin() + n, nums.end());
+        
+        // Function to generate all possible subset sums
+        auto generateSubsetSums = [&](vector<int>& arr) {
+            int m = arr.size();
+            vector<vector<int>> subsetSums(m + 1);
+            for (int mask = 0; mask < (1 << m); ++mask) {
+                int sum = 0, count = 0;
+                for (int i = 0; i < m; ++i) {
+                    if (mask & (1 << i)) {
+                        sum += arr[i];
+                        count++;
+                    }
+                }
+                subsetSums[count].push_back(sum);
+            }
+            return subsetSums;
+        };
+        
+        // Generate all subset sums for both halves
+        vector<vector<int>> leftSums = generateSubsetSums(left);
+        vector<vector<int>> rightSums = generateSubsetSums(right);
+        
+        // Sort the sums for binary search
+        for (int i = 0; i <= n; ++i) {
+            sort(rightSums[i].begin(), rightSums[i].end());
+        }
+        
+        int totalSum = accumulate(nums.begin(), nums.end(), 0);
+        int target = totalSum / 2;
+        int minDiff = INT_MAX;
+        
+        // For each subset sum in the left, find the closest match in the right
+        for (int i = 0; i <= n; ++i) {
+            for (int sumLeft : leftSums[i]) {
+                int requiredRight = target - sumLeft;
+                int j = n - i;
+                auto it = lower_bound(rightSums[j].begin(), rightSums[j].end(), requiredRight);
+                
+                // Check closest matches
+                if (it != rightSums[j].end()) {
+                    int sumRight = *it;
+                    int currentDiff = abs(totalSum - 2 * (sumLeft + sumRight));
+                    minDiff = min(minDiff, currentDiff);
+                }
+                if (it != rightSums[j].begin()) {
+                    int sumRight = *(--it);
+                    int currentDiff = abs(totalSum - 2 * (sumLeft + sumRight));
+                    minDiff = min(minDiff, currentDiff);
+                }
+            }
+        }
+        
+        return minDiff;
+    }
+};
