@@ -1,0 +1,18 @@
+// Approach 1
+
+int f(int index, int weight, vector<int>& w, vector<int>& value)
+        {
+            if(index==0)
+            {
+                if(w[index]<weight)
+                {
+                    return value[0];
+                }
+                else return 0;
+            }
+
+            int not_take = f(index-1, weight, w, value);
+            int take = INT_MIN;
+            if(w[index]<=weight) take = value[index] + f(index-1, weight-w[index], w, value);
+            return max(take, not_take);
+        }
