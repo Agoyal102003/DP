@@ -1,0 +1,44 @@
+It is basically same question as count the partition in subsets with given difference.
+
+// Approach 1
+
+class Solution {
+public:
+    const int MOD = 1e9 + 7;
+	int count(int index, vector<int>& arr, int n, int sum, vector<vector<int>>& dp)
+    {
+        
+        if (index == 0)
+        {
+            if(sum==0 && arr[0]==0) return 2;
+            if(sum==0 || sum==arr[0]) return 1;
+            return 0;
+        }
+        
+        if(dp[index][sum]!=-1) return dp[index][sum];
+        // pick the current element if it's less than or equal to the remaining sum
+        int pick = 0;
+        if (arr[index] <= sum) pick = (count(index - 1, arr, n, sum - arr[index], dp))% MOD;
+        
+        // don't pick the current element
+        int notPick = (count(index - 1, arr, n, sum, dp)) % MOD;
+        
+        return dp[index][sum]=(pick + notPick) % MOD;
+    }
+    
+    int perfectSum(vector<int>& arr, int n, int sum)
+    {
+        // Your code goes here
+        vector<vector<int>> dp(n, vector<int>(sum+1, -1));
+        return count(n-1, arr, n, sum, dp);
+    }
+
+    int findTargetSumWays(vector<int>& nums, int target) {
+        int totSum=0;
+        for(int i=0; i<nums.size(); i++) totSum+=nums[i];
+        
+        if(totSum-target <0 || (totSum-target)%2) return false;
+        
+        return perfectSum(nums, nums.size(), (totSum-target)/2);
+    }
+};
