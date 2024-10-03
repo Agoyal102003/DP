@@ -1,0 +1,57 @@
+// Approach 1 -> Recursive way 
+
+class Solution {
+public:
+    int f(int index, vector<int>& coins, int amount)
+    {
+        if(index==0)
+        {
+            if(amount % coins[0]==0)
+            {
+                return amount/coins[0];
+            }
+            else return 1e9 + 7;
+        }
+        int not_take= f(index-1, coins, amount);
+        int take = INT_MAX;
+        if(coins[index]<=amount) take=1+ f(index, coins, amount-coins[index]);
+
+        return min(not_take, take);
+    }
+
+    int coinChange(vector<int>& coins, int amount) {
+        int result =f(coins.size()-1, coins, amount);
+
+        return result == 1e9 + 7 ? -1 : result;
+    }
+};
+
+// Approach 2-> Memoization 
+
+class Solution {
+public:
+    int f(int index, vector<int>& coins, int amount, vector<vector<int>>& dp)
+    {
+        if(index==0)
+        {
+            if(amount % coins[0]==0)
+            {
+                return amount/coins[0];
+            }
+            else return 1e9 + 7;
+        }
+        if(dp[index][amount]!=-1) return dp[index][amount];
+        int not_take= f(index-1, coins, amount, dp);
+        int take = INT_MAX;
+        if(coins[index]<=amount) take=1+ f(index, coins, amount-coins[index], dp);
+
+        return dp[index][amount]=min(not_take, take);
+    }
+
+    int coinChange(vector<int>& coins, int amount) {
+        vector<vector<int>> dp(coins.size(), vector<int>(amount+1, -1));
+        int result =f(coins.size()-1, coins, amount, dp);
+
+        return result == 1e9 + 7 ? -1 : result;
+    }
+};
