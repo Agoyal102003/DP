@@ -1,24 +1,58 @@
 // Approach 1 -> Recursive way
 
 int count(int index, int arr[], int n, int sum)
-	{
-	    if(sum==0) return 1;
-	    if(index==n) return 0;
-	    
-	    //pick 
-	    int pick = 0;
-	    if(arr[index]<=sum) pick = count(index+1, arr, n, sum-arr[index]);
-	    
-	    int notPick = count(index+1, arr, n, sum);
-	    
-	    return pick+notPick;
-	}
-	
-	int perfectSum(int arr[], int n, int sum)
-	{
+    {
+        
+        if (index == 0)
+        {
+            if(sum==0 && arr[0]==0) return 2;
+            if(sum==0 || sum==arr[0]) return 1;
+            return 0;
+        }
+        // pick the current element if it's less than or equal to the remaining sum
+        int pick = 0;
+        if (arr[index] <= sum) pick = count(index - 1, arr, n, sum - arr[index]);
+        
+        // don't pick the current element
+        int notPick = count(index - 1, arr, n, sum);
+        
+        return pick + notPick;
+    }
+    
+    int perfectSum(int arr[], int n, int sum)
+    {
         // Your code goes here
-        return count(0, arr, n, sum);
-	}
+        
+        return count(n-1, arr, n, sum);
+    }
 
 // Approach 2 -> Memoization 
 
+const int MOD = 1e9 + 7;
+	int count(int index, int arr[], int n, int sum, vector<vector<int>>& dp)
+    {
+        
+        if (index == 0)
+        {
+            if(sum==0 && arr[0]==0) return 2;
+            if(sum==0 || sum==arr[0]) return 1;
+            return 0;
+        }
+        
+        if(dp[index][sum]!=-1) return dp[index][sum];
+        // pick the current element if it's less than or equal to the remaining sum
+        int pick = 0;
+        if (arr[index] <= sum) pick = (count(index - 1, arr, n, sum - arr[index], dp))% MOD;
+        
+        // don't pick the current element
+        int notPick = (count(index - 1, arr, n, sum, dp)) % MOD;
+        
+        return dp[index][sum]=(pick + notPick) % MOD;
+    }
+    
+    int perfectSum(int arr[], int n, int sum)
+    {
+        // Your code goes here
+        vector<vector<int>> dp(n, vector<int>(sum+1, -1));
+        return count(n-1, arr, n, sum, dp);
+    }
