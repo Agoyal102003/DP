@@ -1,0 +1,24 @@
+// Approach 1 -> Recursive way
+
+int count(int index, int arr[], int n, int sum)
+	{
+	    if(sum==0) return 1;
+	    if(index==n) return 0;
+	    
+	    //pick 
+	    int pick = 0;
+	    if(arr[index]<=sum) pick = count(index+1, arr, n, sum-arr[index]);
+	    
+	    int notPick = count(index+1, arr, n, sum);
+	    
+	    return pick+notPick;
+	}
+	
+	int perfectSum(int arr[], int n, int sum)
+	{
+        // Your code goes here
+        return count(0, arr, n, sum);
+	}
+
+// Approach 2 -> Memoization 
+
