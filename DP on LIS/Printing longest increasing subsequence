@@ -1,0 +1,31 @@
+// Approach 1 -> Recursive way 
+
+void f(int index, int last, vector<int>& nums, vector<int>& ans,
+    vector<int>& longest_ans)
+    {
+        if(index==nums.size())
+        {
+            if(longest_ans.size()<ans.size())
+            {
+                longest_ans=ans;
+            }
+            return;
+        }
+        //take
+        if(last==-1 || nums[last]<nums[index])
+        {
+            ans.push_back(nums[index]);
+            f(index+1, index, nums, ans, longest_ans);
+            ans.pop_back();
+        }
+        //not take 
+        f(index+1, last, nums, ans, longest_ans);
+    }
+  
+    vector<int> longestIncreasingSubsequence(int n, vector<int>& arr) {
+        // Code here
+        vector<int> ans, longest_ans;
+        f(0, -1, arr, ans, longest_ans);
+        return longest_ans;
+    }
+
