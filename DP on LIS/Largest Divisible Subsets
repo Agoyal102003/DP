@@ -1,0 +1,76 @@
+// Approach 1 -> Recursive way 
+
+class Solution {
+public:
+    void f(int index, int last, vector<int>& nums, vector<int>& ans, 
+    vector<int>& longest_ans)
+    {
+        if(index==nums.size())
+        {
+            if(longest_ans.size()<ans.size())
+            {
+                longest_ans=ans;
+            }
+            return;
+        }
+        //take
+        if(last==-1 || nums[index] % last==0)
+        {
+            ans.push_back(nums[index]);
+            f(index+1, nums[index], nums, ans, longest_ans);
+            ans.pop_back();
+        }
+        //not take
+        f(index+1, last, nums, ans, longest_ans);
+    }
+
+    vector<int> largestDivisibleSubset(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<int> ans, longest_ans;
+        f(0, -1, nums, ans, longest_ans);
+        return longest_ans;
+    }
+};
+
+// Approach 2 ->
+
+class Solution {
+public:
+    vector<int> largestDivisibleSubset(vector<int>& nums) {
+        if (nums.empty()) return {};
+        
+        // Step 1: Sort the array
+        sort(nums.begin(), nums.end());
+        
+        int n = nums.size();
+        vector<int> dp(n, 1);  // dp[i] will store the size of the largest subset ending at nums[i]
+        vector<int> prev(n, -1);  // prev[i] will store the previous index of the element in the subset
+        int max_size = 1;  // To store the size of the largest subset
+        int max_index = 0;  // To store the last index of the largest subset
+        
+        // Step 2: Populate dp and prev arrays
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                if (nums[i] % nums[j] == 0 && dp[i] < dp[j] + 1) {
+                    dp[i] = dp[j] + 1;
+                    prev[i] = j;
+                }
+            }
+            // Update max_size and max_index if we found a larger subset
+            if (dp[i] > max_size) {
+                max_size = dp[i];
+                max_index = i;
+            }
+        }
+        
+        // Step 3: Reconstruct the largest subset
+        vector<int> largest_subset;
+        for (int i = max_index; i >= 0; i = prev[i]) {
+            largest_subset.push_back(nums[i]);
+            if (prev[i] == -1) break;  // We've reached the start of the subset
+        }
+        
+        reverse(largest_subset.begin(), largest_subset.end());
+        return largest_subset;
+    }
+};
