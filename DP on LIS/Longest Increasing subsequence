@@ -1,0 +1,45 @@
+// Approach 1 -> Recursive way 
+
+class Solution {
+public:
+    int f(int index, int last, vector<int>& nums)
+    {
+        if(index==nums.size())
+        {
+            return 0;
+        }
+        // not take
+        int len = f(index+1, last, nums);
+        //take 
+        if(last==-1 || nums[last]<nums[index]) len = max(len, 1+ f(index+1, index, nums));
+        return len;
+    }
+
+    int lengthOfLIS(vector<int>& nums) {
+        return f(0, -1, nums);
+    }
+};
+
+// Approach 2-> Memoization 
+
+class Solution {
+public:
+    int f(int index, int last, vector<int>& nums, vector<vector<int>>& dp)
+    {
+        if(index==nums.size())
+        {
+            return 0;
+        }
+        // not take
+        if(dp[index][last+1]!=-1) return dp[index][last+1];
+        int len = f(index+1, last, nums, dp);
+        //take 
+        if(last==-1 || nums[last]<nums[index]) len = max(len, 1+ f(index+1, index, nums, dp));
+        return dp[index][last+1]=len;
+    }
+
+    int lengthOfLIS(vector<int>& nums) {
+        vector<vector<int>> dp(nums.size(), vector<int>(nums.size()+1, -1));
+        return f(0, -1, nums, dp);
+    }
+};
