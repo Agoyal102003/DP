@@ -1,0 +1,79 @@
+Bitonic means subsequence first increasing and then decreasing or just increase or just decrease. 
+
+// Approach 1 -> Considering all 3 cases
+
+int LongestBitonicSequence(int n, vector<int> &nums) {
+        
+        // Step 1: Longest Increasing Subsequence (LIS) from the front
+        vector<int> lis(n, 1);  // lis[i] stores the length of the LIS ending at index i
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    lis[i] = max(lis[i], lis[j] + 1);
+                }
+            }
+        }
+
+        // Step 2: Longest Decreasing Subsequence (LDS) from the back
+        vector<int> lds(n, 1);  // lds[i] stores the length of the LDS starting at index i
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = n - 1; j > i; j--) {
+                if (nums[i] > nums[j]) {
+                    lds[i] = max(lds[i], lds[j] + 1);
+                }
+            }
+        }
+
+        // Step 3: Calculate the maximum length of the bitonic subsequence
+        int maxBitonic = 0;
+        for (int i = 0; i < n; i++) {
+            maxBitonic = max(maxBitonic, lis[i] + lds[i] - 1);
+        }
+
+        return maxBitonic;
+    }
+
+// Approach 2 -> considering only first increasing and then decreasing case
+
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int longestBitonicSequence(vector<int>& nums) {
+        int n = nums.size();
+        if(n < 3) return 0; // Bitonic sequence requires at least 3 elements
+        
+        // Step 1: Longest Increasing Subsequence (LIS)
+        vector<int> lis(n, 1); // lis[i] stores the length of LIS ending at index i
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    lis[i] = max(lis[i], lis[j] + 1);
+                }
+            }
+        }
+
+        // Step 2: Longest Decreasing Subsequence (LDS)
+        vector<int> lds(n, 1); // lds[i] stores the length of LDS starting at index i
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                if (nums[i] > nums[j]) {
+                    lds[i] = max(lds[i], lds[j] + 1);
+                }
+            }
+        }
+
+        // Step 3: Find the maximum length of a valid bitonic subsequence
+        int maxBitonic = 0;
+        for (int i = 0; i < n; i++) {
+            if (lis[i] > 1 && lds[i] > 1) { // Ensure both parts exist (strictly increasing and strictly decreasing)
+                maxBitonic = max(maxBitonic, lis[i] + lds[i] - 1);
+            }
+        }
+
+        return maxBitonic;
+    }
+};
+
