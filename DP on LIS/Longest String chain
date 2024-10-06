@@ -1,0 +1,90 @@
+// Approach 1 -> 
+
+class Solution {
+public:
+    bool checkPossible(string str1, string str2)
+    {
+        if(str1.size()+1 != str2.size()) return false;
+        int i=0;
+        int j=0;
+        while(j<str2.size())
+        {
+            if(i<str1.size() && str1[i]==str2[j])
+            {
+                i++;
+                j++;
+            }
+            else {
+                j++;
+            }
+        }
+        if(i==str1.size() && j==str2.size())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    int f(int index, int last, vector<string>& nums, vector<vector<int>>& dp)
+    {
+        if(index==nums.size())
+        {
+            return 0;
+        }
+        // not take
+        if(dp[index][last+1]!=-1) return dp[index][last+1];
+        int len = f(index+1, last, nums, dp);
+        //take 
+        if(last==-1 || checkPossible(nums[last], nums[index])) len = max(len, 1+ f(index+1, index, nums, dp));
+        return dp[index][last+1]=len;
+    }
+
+    int longestStrChain(vector<string>& words) {
+        sort(words.begin(), words.end(), [](const string& a, const string& b) {
+        return a.size() < b.size();
+    });
+        
+        vector<vector<int>> dp(words.size(), vector<int>(words.size()+1, -1));
+        return f(0, -1, words, dp);
+    }
+};
+
+// Approach 2 ->
+
+class Solution {
+public:
+    bool checkPossible(string str1, string str2) {
+        if(str1.size() + 1 != str2.size()) return false;
+        int i = 0, j = 0;
+        while(j < str2.size()) {
+            if(i < str1.size() && str1[i] == str2[j]) {
+                i++;
+            }
+            j++;
+        }
+        return i == str1.size();
+    }
+
+    int longestStrChain(vector<string>& words) {
+        // Sort words by length
+        sort(words.begin(), words.end(), [](const string& a, const string& b) {
+            return a.size() < b.size();
+        });
+
+        // DP array to store the longest chain ending with each word
+        vector<int> dp(words.size(), 1);
+        int maxLen = 1;
+
+        // Iterate over all word pairs to build chains
+        for(int i = 1; i < words.size(); i++) {
+            for(int j = 0; j < i; j++) {
+                if(checkPossible(words[j], words[i])) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            maxLen = max(maxLen, dp[i]);
+        }
+
+        return maxLen;
+    }
+};
